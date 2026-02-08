@@ -1,0 +1,11 @@
+{
+  "name": "nguru-frontend",
+  "version": "1.0.0",
+  "description": "Nguru Frontend",
+  "scripts": {
+    "start": "npx serve ."
+  },
+  "dependencies": {
+    "serve": "^14.2.0"
+  }
+}
