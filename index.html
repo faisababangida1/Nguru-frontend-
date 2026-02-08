@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nguru - Deep Understanding Through Curiosity</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        #root {
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding-top: 40px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .header .tagline {
+            font-size: 1.3rem;
+            opacity: 0.95;
+            font-weight: 500;
+        }
+
+        .header .subtitle {
+            font-size: 1rem;
+            opacity: 0.85;
+            margin-top: 8px;
+            font-style: italic;
+        }
+
+        .main-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .search-section {
+            padding: 40px;
+            background: linear-gradient(to bottom, #f8f9fa 0%, white 100%);
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .search-section h2 {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: #333;
+            text-align: center;
+        }
+
+        .search-container {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+
+        .topic-input {
+            flex: 1;
+            padding: 16px 24px;
+            border: 2px solid #e4e6eb;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .topic-input:focus {
+            border-color: #667eea;
+        }
+
+        .explore-button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 16px 40px;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .explore-button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .explore-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .example-topics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 12px;
+        }
+
+        .example-topic {
+            background: white;
+            padding: 14px 18px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+            border: 2px solid #e9ecef;
+            font-size: 0.95rem;
+        }
+
+        .example-topic:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+        }
+
+        .content-section {
+            padding: 40px;
+        }
+
+        .back-button {
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-bottom: 20px;
+            display: inline-block;
+            transition: all 0.2s;
+        }
+
+        .back-button:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #667eea;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            border: 4px solid #e9ecef;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .lecture-container {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            line-height: 1.8;
+            font-size: 1.05rem;
+            color: #2c3e50;
+        }
+
+        .lecture-container h3 {
+            color: #667eea;
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .lecture-container h4 {
+            color: #764ba2;
+            font-size: 1.3rem;
+            margin-top: 25px;
+            margin-bottom: 12px;
+        }
+
+        .lecture-container p {
+            margin-bottom: 15px;
+        }
+
+        .lecture-container ul, .lecture-container ol {
+            margin-left: 25px;
+            margin-bottom: 15px;
+        }
+
+        .lecture-container li {
+            margin-bottom: 8px;
+        }
+
+        .lecture-container strong {
+            color: #495057;
+            font-weight: 600;
+        }
+
+        .lecture-container em {
+            color: #6c757d;
+            background: #fff3cd;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-style: normal;
+        }
+
+        .understanding-prompt {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            font-size: 1.05rem;
+            line-height: 1.6;
+        }
+
+        .understanding-prompt strong {
+            display: block;
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+
+        .qa-section {
+            margin-top: 30px;
+        }
+
+        .qa-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px 12px 0 0;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .qa-messages {
+            background: white;
+            border: 2px solid #e9ecef;
+            border-top: none;
+            border-radius: 0 0 12px 12px;
+            max-height: 400px;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .qa-message {
+            margin-bottom: 20px;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .qa-message.question {
+            background: #e7f3ff;
+            padding: 12px 16px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .qa-message.answer {
+            background: #f8f9fa;
+            padding: 12px 16px;
+            border-radius: 8px;
+            border-left: 4px solid #28a745;
+            margin-left: 20px;
+        }
+
+        .qa-message strong {
+            display: block;
+            margin-bottom: 6px;
+            color: #667eea;
+        }
+
+        .qa-message.answer strong {
+            color: #28a745;
+        }
+
+        .qa-input-container {
+            display: flex;
+            gap: 12px;
+            margin-top: 15px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 12px;
+        }
+
+        .qa-input {
+            flex: 1;
+            padding: 12px 18px;
+            border: 2px solid #e4e6eb;
+            border-radius: 8px;
+            font-size: 1rem;
+            outline: none;
+        }
+
+        .qa-input:focus {
+            border-color: #667eea;
+        }
+
+        .qa-button {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .qa-button:hover:not(:disabled) {
+            background: #218838;
+            transform: translateY(-1px);
+        }
+
+        .qa-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .error-message {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            color: #856404;
+        }
+
+        .error-message strong {
+            display: block;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2.5rem;
+            }
+
+            .search-container {
+                flex-direction: column;
+            }
+
+            .example-topics {
+                grid-template-columns: 1fr;
+            }
+
+            .qa-message.answer {
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState } = React;
+
+        // ⚠️ REPLACE THIS WITH YOUR RAILWAY BACKEND URL!
+        const API_URL = 'https://nguru-production.up.railway.app';
+
+        function App() {
+            const [view, setView] = useState('search');
+            const [topic, setTopic] = useState('');
+            const [currentTopic, setCurrentTopic] = useState('');
+            const [lecture, setLecture] = useState('');
+            const [loading, setLoading] = useState(false);
+            const [qaMessages, setQaMessages] = useState([]);
+            const [question, setQuestion] = useState('');
+            const [qaLoading, setQaLoading] = useState(false);
+            const [error, setError] = useState('');
+            const [userId] = useState(() => 'user_' + Math.random().toString(36).substr(2, 9));
+
+            const exampleTopics = [
+                "🚗 How does a car engine work?",
+                "🌤️ Why is the sky blue?",
+                "✈️ How do airplanes fly?",
+                "⚡ How does electricity work?",
+                "🌐 How does the internet work?",
+                "💧 Why can't we use water as fuel?",
+                "🧬 How does DNA replication work?",
+                "🔋 How do batteries store energy?",
+                "🌍 Why do we have seasons?",
+                "🎵 How do speakers produce sound?"
+            ];
+
+            const exploreTopic = async (topicText) => {
+                const topicToExplore = topicText || topic;
+                if (!topicToExplore.trim()) return;
+
+                setLoading(true);
+                setError('');
+                setCurrentTopic(topicToExplore);
+                setView('content');
+                setQaMessages([]);
+
+                try {
+                    const response = await fetch(`${API_URL}/api/lecture`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            topic: topicToExplore,
+                            userId: userId
+                        })
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Failed to generate lecture');
+                    }
+
+                    const data = await response.json();
+                    setLecture(data.lecture);
+                } catch (err) {
+                    console.error('Error:', err);
+                    setError(`Connection failed. Backend might be down or URL is wrong: ${API_URL}`);
+                } finally {
+                    setLoading(false);
+                }
+            };
+
+            const askQuestion = async () => {
+                if (!question.trim()) return;
+
+                const currentQuestion = question;
+                setQuestion('');
+                setQaLoading(true);
+
+                setQaMessages(prev => [...prev, {
+                    type: 'question',
+                    content: currentQuestion
+                }]);
+
+                try {
+                    const response = await fetch(`${API_URL}/api/question`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            question: currentQuestion,
+                            userId: userId,
+                            topic: currentTopic
+                        })
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Failed to get answer');
+                    }
+
+                    const data = await response.json();
+                    setQaMessages(prev => [...prev, {
+                        type: 'answer',
+                        content: data.answer
+                    }]);
+                } catch (err) {
+                    console.error('Error:', err);
+                    setQaMessages(prev => [...prev, {
+                        type: 'answer',
+                        content: 'Sorry, I had trouble answering. Please try again.'
+                    }]);
+                } finally {
+                    setQaLoading(false);
+                }
+            };
+
+            const goBack = () => {
+                setView('search');
+                setTopic('');
+                setLecture('');
+                setQaMessages([]);
+                setError('');
+            };
+
+            return (
+                <div className="container">
+                    <div className="header">
+                        <h1>Nguru</h1>
+                        <p className="tagline">Deep Understanding Through Curiosity</p>
+                        <p className="subtitle">Real knowledge, not illusions. Understand from the fundamentals.</p>
+                    </div>
+
+                    <div className="main-card">
+                        {view === 'search' ? (
+                            <div className="search-section">
+                                <h2>What do you want to truly understand?</h2>
+                                
+                                <div className="search-container">
+                                    <input 
+                                        type="text"
+                                        className="topic-input"
+                                        placeholder="e.g., How does a car engine work? Why is the sky blue?"
+                                        value={topic}
+                                        onChange={(e) => setTopic(e.target.value)}
+                                        onKeyPress={(e) => e.key === 'Enter' && exploreTopic()}
+                                    />
+                                    <button 
+                                        className="explore-button"
+                                        onClick={() => exploreTopic()}
+                                        disabled={loading}
+                                    >
+                                        Explore
+                                    </button>
+                                </div>
+
+                                <div className="example-topics">
+                                    {exampleTopics.map((topic, idx) => (
+                                        <div 
+                                            key={idx}
+                                            className="example-topic"
+                                            onClick={() => {
+                                                const cleanTopic = topic.replace(/^[^\s]+\s/, '');
+                                                setTopic(cleanTopic);
+                                                exploreTopic(cleanTopic);
+                                            }}
+                                        >
+                                            {topic}
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="content-section">
+                                <button className="back-button" onClick={goBack}>
+                                    ← Back to Search
+                                </button>
+
+                                {loading ? (
+                                    <div className="loading">
+                                        <div className="loading-spinner"></div>
+                                        <p>Preparing your comprehensive lecture...</p>
+                                    </div>
+                                ) : error ? (
+                                    <div className="error-message">
+                                        <strong>⚠️ Connection Error</strong>
+                                        <p>{error}</p>
+                                    </div>
+                                ) : (
+                                    <>
+                                        <div className="lecture-container">
+                                            <h3>{currentTopic}</h3>
+                                            <div dangerouslySetInnerHTML={{ __html: lecture }} />
+                                        </div>
+
+                                        <div className="qa-section">
+                                            <div className="understanding-prompt">
+                                                <strong>💡 Now it's your turn</strong>
+                                                Ask questions about anything you didn't fully understand.
+                                            </div>
+
+                                            <div className="qa-header">
+                                                Questions & Clarifications
+                                            </div>
+
+                                            <div className="qa-messages">
+                                                {qaMessages.length === 0 ? (
+                                                    <p style={{color: '#6c757d', fontStyle: 'italic'}}>
+                                                        No questions yet. Ask about anything that wasn't clear!
+                                                    </p>
+                                                ) : (
+                                                    qaMessages.map((msg, idx) => (
+                                                        <div key={idx} className={`qa-message ${msg.type}`}>
+                                                            <strong>
+                                                                {msg.type === 'question' ? 'You asked:' : 'Nguru:'}
+                                                            </strong>
+                                                            <div dangerouslySetInnerHTML={{ __html: msg.content }} />
+       
