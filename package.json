@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Nguru Frontend",
   "scripts": {
-    "start": "npx serve ."
+    "start": "npx serve -s . -l 8080"
   },
   "dependencies": {
     "serve": "^14.2.0"
